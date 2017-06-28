@@ -1,0 +1,37 @@
+Many records per patient to one record per patient
+
+data resubmit.fmcrx_meds1;
+set a1;
+by id filldate enddate;
+retain id pb_name1-pb_name30 filldate1-filldate30 enddate1-enddate30 ppd1-ppd30 doseperpill1-doseperpill30 description1-description30;
+array phosbind {*}  $50 pb_name1-pb_name30;
+array fill{*} filldate1-filldate30;
+array end{*} enddate1-enddate30;
+array pill_burden{*} ppd1-ppd30;
+array dose{*} $20 doseperpill1-doseperpill30;
+array desc{*} $50 description1-description30;
+
+if first.id then do;
+i=0;
+call missing(of phosbind{*});
+call missing(of fill{*});
+call missing(of end{*});
+call missing(of pill_burden{*});
+call missing(of dose{*});
+call missing(of desc{*});
+end;
+i+1;
+
+if filldate ne . then do;
+phosbind{i}=pb_name;
+fill{i}=filldate;
+end{i}= enddate;
+pill_burden{i}=ppd;
+dose{i}=doseperpill;
+desc{i}=description;
+end;
+if last.id then output;
+
+format filldate1-filldate30 enddate1-enddate30 date7.;
+keep id pb_name1-pb_name30 filldate1-filldate30 enddate1-enddate30 ppd1-ppd30 doseperpill1-doseperpill30 description1-description30;
+run;
